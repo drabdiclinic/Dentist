@@ -1,5 +1,5 @@
 const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-const DB={get:(k)=>{try{return JSON.parse(localStorage.getItem('abdi_'+k))||[]}catch(e){return[]}},set:(k,v)=>{try{localStorage.setItem('abdi_'+k,JSON.stringify(v))}catch(e){}}};
+const sb=(typeof supabase!=='undefined'&&SUPABASE_URL.startsWith('http'))?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 const fa=n=>String(n).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
 const money=n=>fa(Number(n||0).toLocaleString('en-US'))+' تومان';
 function jtoday(){const p=new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date());const g=t=>+p.find(x=>x.type===t).value;return{y:g('year'),m:g('month'),d:g('day')}}
@@ -12,3 +12,4 @@ const fill=()=>{const n=m.value<=6?31:m.value<=11?30:29;d.innerHTML=Array.from({
 fill();d.value=t.d;m.onchange=()=>{const v=d.value;fill();d.value=Math.min(v,d.options.length)};
 return()=>jstr(y.value,m.value,d.value)}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const en=s=>+String(s).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[^\d]/g,'')||0;

@@ -34,13 +34,16 @@
 <div class="full"><button class="btn">ثبت درخواست نوبت</button><div class="msg" id="ok" role="status"></div></div>
 </form></div></section>
 <footer>© کلینیک ارتودنسی عبدی · آدرس و تلفن را اینجا اضافه کنید · <a href="admin.html">ورود مدیریت</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
 const get=jpicker(document.getElementById('jd'));
-document.getElementById('bf').onsubmit=e=>{e.preventDefault();
-const f=Object.fromEntries(new FormData(e.target)),t=jtoday(),date=get(),ok=document.getElementById('ok');
-ok.style.display='block';
-if(date<jstr(t.y,t.m,t.d)){ok.style.cssText='display:block;background:#fde8e8;color:var(--bad)';ok.textContent='تاریخ انتخابی گذشته است؛ تاریخ امروز یا بعد را انتخاب کنید.';return}
-const r=DB.get('requests');r.push({id:Date.now(),...f,date,status:'در انتظار',created:jstr(t.y,t.m,t.d)});DB.set('requests',r);
+document.getElementById('bf').onsubmit=async e=>{e.preventDefault();
+const f=Object.fromEntries(new FormData(e.target)),t=jtoday(),date=get(),ok=document.getElementById('ok'),bad=m=>{ok.style.cssText='display:block;background:#fde8e8;color:var(--bad)';ok.textContent=m};
+if(date<jstr(t.y,t.m,t.d))return bad('تاریخ انتخابی گذشته است؛ تاریخ امروز یا بعد را انتخاب کنید.');
+if(!sb)return bad('اتصال به سرور برقرار نیست.');
+const{error}=await sb.from('requests').insert({name:f.name,phone:f.phone,date_j:date,time:f.time,type:f.type,note:f.note});
+if(error)return bad('ثبت انجام نشد؛ دوباره تلاش کنید.');
 ok.style.cssText='display:block';ok.textContent='درخواست شما برای '+fa(date)+' ثبت شد. منشی به‌زودی تماس می‌گیرد.';e.target.reset()};
 </script></body></html>

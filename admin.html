@@ -4,48 +4,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css"></head><body>
 <div id="lg" class="login"><img src="assets/logo.png" alt=""><h2>ورود مدیریت</h2><br>
-<input id="pw" type="password" placeholder="رمز عبور" autofocus><br><br><button class="btn" onclick="login()">ورود</button><p id="er" style="color:var(--bad)"></p></div>
+<input id="em" type="email" placeholder="ایمیل مدیر" dir="ltr" autofocus><br><br><input id="pw" type="password" placeholder="رمز عبور" dir="ltr"><br><br><button class="btn" onclick="login()">ورود</button><p id="er" style="color:var(--bad)"></p></div>
 <div id="app" hidden>
 <div class="top"><div class="w"><div style="display:flex;align-items:center"><img src="assets/logo.png" alt=""><b>پنل مدیریت</b></div>
-<div><a href="index.html" style="margin-left:16px">مشاهده سایت</a><a href="#" onclick="sessionStorage.clear();location.reload()">خروج</a></div></div></div>
+<div><a href="index.html" style="margin-left:16px">مشاهده سایت</a><a href="#" onclick="sb.auth.signOut().then(()=>location.reload())">خروج</a></div></div></div>
 <div class="w"><div class="tabs"><button id="t1" class="on" onclick="tab(1)">درخواست‌های نوبت</button><button id="t2" onclick="tab(2)">مشاهده پرونده بیماران</button></div>
 <div id="p1" class="tw"></div>
-<div id="p2" hidden><div class="pl"><div><div class="card" style="margin-bottom:12px"><input id="sq" placeholder="جستجوی بیمار" oninput="list()"><br><br><button class="btn s" onclick="newP()">+ بیمار جدید</button></div><div class="li" id="pl"></div></div><div id="pd"><p class="sub">یک بیمار را انتخاب کنید یا بیمار جدید بسازید.</p></div></div></div>
+<div id="p2" hidden><div class="pl"><div><div class="card" style="margin-bottom:12px"><input id="sq" placeholder="جستجوی بیمار" oninput="list()"><br><br><input id="npn" placeholder="نام بیمار جدید"><br><br><input id="npp" placeholder="شماره تماس" inputmode="tel"><br><br><button class="btn s" onclick="newP()">+ افزودن بیمار</button></div><div class="li" id="pl"></div></div><div id="pd"><p class="sub">یک بیمار را انتخاب کنید یا بیمار جدید بسازید.</p></div></div></div>
 </div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
-const PASS='1234'; // رمز ورود را حتماً تغییر دهید
-const $=id=>document.getElementById(id);let cur=null;
-function login(){if($('pw').value===PASS){sessionStorage.a=1;start()}else $('er').textContent='رمز اشتباه است'}
+const $=id=>document.getElementById(id);let cur=null,P=[];
+async function login(){if(!sb)return;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error)$('er').textContent='ایمیل یا رمز اشتباه است';else start()}
 $('pw').onkeydown=e=>e.key==='Enter'&&login();
-function start(){$('lg').hidden=true;$('app').hidden=false;reqs();list()}
-if(sessionStorage.a)start();
+function start(){$('lg').hidden=true;$('app').hidden=false;reqs();loadP()}
+(async()=>{if(!sb){$('er').textContent='اطلاعات Supabase در assets/config.js وارد نشده است';return}const{data}=await sb.auth.getSession();if(data.session)start()})();
 function tab(n){$('p1').hidden=n!=1;$('p2').hidden=n!=2;$('t1').className=n==1?'on':'';$('t2').className=n==2?'on':''}
+function cf(m,fn){const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:#0b254588;display:grid;place-items:center;z-index:99';o.innerHTML=`<div class="card" style="text-align:center"><p>${m}</p><br><button class="btn d">بله، حذف شود</button> <button class="btn o">انصراف</button></div>`;const b=o.querySelectorAll('button');b[0].onclick=()=>{o.remove();fn()};b[1].onclick=()=>o.remove();document.body.append(o)}
 // requests
-function reqs(){const r=DB.get('requests').sort((a,b)=>a.date<b.date?-1:1);
-$('p1').innerHTML=r.length?`<table><tr><th>تاریخ درخواستی</th><th>زمان</th><th>نام</th><th>تلفن</th><th>نوع</th><th>توضیحات</th><th>وضعیت</th><th></th></tr>${r.map(x=>`<tr><td>${fa(x.date)}</td><td>${esc(x.time)}</td><td>${esc(x.name)}</td><td>${fa(esc(x.phone))}</td><td>${esc(x.type)}</td><td>${esc(x.note)}</td><td><span class="tag ${x.status=='تأیید شد'?'ok':x.status=='رد شد'?'no':''}">${x.status}</span></td><td style="white-space:nowrap"><button class="btn s" onclick="st(${x.id},'تأیید شد')">تأیید</button> <button class="btn s o" onclick="st(${x.id},'رد شد')">رد</button> <button class="btn s d" onclick="rm(${x.id})">حذف</button></td></tr>`).join('')}</table>`:'<p class="sub">هنوز درخواستی ثبت نشده است.</p>'}
-const st=(id,s)=>{const r=DB.get('requests');r.find(x=>x.id==id).status=s;DB.set('requests',r);reqs()};
-const rm=id=>{if(confirm('حذف شود؟')){DB.set('requests',DB.get('requests').filter(x=>x.id!=id));reqs()}};
+async function reqs(){const{data:r}=await sb.from('requests').select('*').order('date_j');
+$('p1').innerHTML=r&&r.length?`<table><tr><th>تاریخ درخواستی</th><th>زمان</th><th>نام</th><th>تلفن</th><th>نوع</th><th>توضیحات</th><th>وضعیت</th><th></th></tr>${r.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${esc(x.time)}</td><td>${esc(x.name)}</td><td>${fa(esc(x.phone))}</td><td>${esc(x.type)}</td><td>${esc(x.note)}</td><td><span class="tag ${x.status=='تأیید شد'?'ok':x.status=='رد شد'?'no':''}">${x.status}</span></td><td style="white-space:nowrap"><button class="btn s" onclick="st(${x.id},'تأیید شد')">تأیید</button> <button class="btn s o" onclick="st(${x.id},'رد شد')">رد</button> <button class="btn s d" onclick="rm(${x.id})">حذف</button></td></tr>`).join('')}</table>`:'<p class="sub">هنوز درخواستی ثبت نشده است.</p>'}
+const st=async(id,s)=>{await sb.from('requests').update({status:s}).eq('id',id);reqs()};
+const rm=id=>cf('این درخواست حذف شود؟',async()=>{await sb.from('requests').delete().eq('id',id);reqs()});
 // patients
-function list(){const q=$('sq').value.trim(),p=DB.get('patients').filter(x=>x.name.includes(q)||(x.phone||'').includes(q));
+async function loadP(){const{data}=await sb.from('patients').select('*').order('created_at',{ascending:false});P=data||[];list()}
+function list(){const q=$('sq').value.trim(),p=P.filter(x=>x.name.includes(q)||(x.phone||'').includes(q));
 $('pl').innerHTML=p.map(x=>`<div class="${x.id==cur?'on':''}" onclick="show(${x.id})">${esc(x.name)}<br><small>${fa(esc(x.phone))}</small></div>`).join('')||'<div>بیماری ثبت نشده</div>'}
-function newP(){const name=prompt('نام و نام خانوادگی بیمار:');if(!name)return;const phone=prompt('شماره تماس:')||'';
-const p=DB.get('patients');const id=Date.now();p.push({id,name,phone,notes:'',tx:[],pay:[]});DB.set('patients',p);show(id)}
-function show(id){cur=id;list();const p=DB.get('patients').find(x=>x.id==id),cost=p.tx.reduce((s,x)=>s+ +x.cost,0),paid=p.pay.reduce((s,x)=>s+ +x.amt,0);
+async function newP(){const name=$('npn').value.trim(),phone=$('npp').value.trim();if(!name){$('npn').focus();return}
+const{data,error}=await sb.from('patients').insert({name,phone}).select().single();if(error)return alert('ثبت نشد');$('npn').value=$('npp').value='';await loadP();show(data.id)}
+async function show(id){cur=id;list();const p=P.find(x=>x.id==id);
+const[{data:tx},{data:pay}]=await Promise.all([sb.from('treatments').select('*').eq('patient_id',id).order('date_j'),sb.from('payments').select('*').eq('patient_id',id).order('date_j')]);
+const cost=tx.reduce((s,x)=>s+ +x.cost,0),paid=pay.reduce((s,x)=>s+ +x.amount,0);
 $('pd').innerHTML=`<h2>${esc(p.name)}</h2><p class="sub">${fa(esc(p.phone))}</p>
 <div class="sum"><div class="card"><b>${money(cost)}</b>کل هزینه</div><div class="card"><b>${money(paid)}</b>پرداخت‌شده</div><div class="card"><b style="color:${cost-paid>0?'var(--bad)':'var(--ok)'}">${money(cost-paid)}</b>مانده</div></div>
-<label>اطلاعات و سابقه پزشکی</label><textarea id="nt" rows="3" onchange="save('notes',this.value)">${esc(p.notes)}</textarea>
+<label>اطلاعات و سابقه پزشکی</label><textarea id="nt" rows="3" onchange="saveN(this.value)">${esc(p.notes)}</textarea>
 <h3 style="margin-top:22px;color:var(--n)">روند اقدامات انجام‌شده</h3>
-<div class="tw"><table><tr><th>تاریخ</th><th>اقدام</th><th>هزینه</th><th></th></tr>${p.tx.map((x,i)=>`<tr><td>${fa(x.date)}</td><td>${esc(x.desc)}</td><td>${money(x.cost)}</td><td><button class="btn s d" onclick="del('tx',${i})">حذف</button></td></tr>`).join('')}</table></div>
-<div class="row"><div id="d1"></div><input id="ds" placeholder="شرح اقدام"><input id="co" type="number" placeholder="هزینه (تومان)"><button class="btn" onclick="add('tx')">افزودن</button></div>
+<div class="tw"><table><tr><th>تاریخ</th><th>اقدام</th><th>هزینه</th><th></th></tr>${tx.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${esc(x.descr)}</td><td>${money(x.cost)}</td><td><button class="btn s d" onclick="del('treatments',${x.id})">حذف</button></td></tr>`).join('')}</table></div>
+<div class="row"><div id="d1"></div><input id="ds" placeholder="شرح اقدام"><input id="co" inputmode="numeric" placeholder="هزینه (تومان)"><button class="btn" onclick="add('tx')">افزودن</button></div>
 <h3 style="margin-top:22px;color:var(--n)">پرداختی‌ها</h3>
-<div class="tw"><table><tr><th>تاریخ</th><th>مبلغ</th><th>توضیح</th><th></th></tr>${p.pay.map((x,i)=>`<tr><td>${fa(x.date)}</td><td>${money(x.amt)}</td><td>${esc(x.desc)}</td><td><button class="btn s d" onclick="del('pay',${i})">حذف</button></td></tr>`).join('')}</table></div>
-<div class="row"><div id="d2"></div><input id="am" type="number" placeholder="مبلغ (تومان)"><input id="pd2" placeholder="توضیح (نقد/کارت)"><button class="btn" onclick="add('pay')">ثبت پرداخت</button></div>
+<div class="tw"><table><tr><th>تاریخ</th><th>مبلغ</th><th>توضیح</th><th></th></tr>${pay.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${money(x.amount)}</td><td>${esc(x.descr)}</td><td><button class="btn s d" onclick="del('payments',${x.id})">حذف</button></td></tr>`).join('')}</table></div>
+<div class="row"><div id="d2"></div><input id="am" inputmode="numeric" placeholder="مبلغ (تومان)"><input id="pd2" placeholder="توضیح (نقد/کارت)"><button class="btn" onclick="add('pay')">ثبت پرداخت</button></div>
 <br><button class="btn s d" onclick="delP()">حذف پرونده</button>`;
 window.g1=jpicker($('d1'));window.g2=jpicker($('d2'))}
-function mut(f){const a=DB.get('patients');f(a.find(x=>x.id==cur));DB.set('patients',a);show(cur)}
-const save=(k,v)=>{const a=DB.get('patients');a.find(x=>x.id==cur)[k]=v;DB.set('patients',a)};
-function add(t){if(t=='tx'){if(!$('ds').value)return;mut(p=>p.tx.push({date:g1(),desc:$('ds').value,cost:+$('co').value||0}))}else{if(!+$('am').value)return;mut(p=>p.pay.push({date:g2(),amt:+$('am').value,desc:$('pd2').value}))}}
-const del=(t,i)=>confirm('حذف شود؟')&&mut(p=>p[t].splice(i,1));
-const delP=()=>{if(confirm('کل پرونده حذف شود؟')){DB.set('patients',DB.get('patients').filter(x=>x.id!=cur));cur=null;$('pd').innerHTML='';list()}};
+const saveN=v=>sb.from('patients').update({notes:v}).eq('id',cur).then(()=>{P.find(x=>x.id==cur).notes=v});
+async function add(t){if(t=='tx'){if(!$('ds').value)return;await sb.from('treatments').insert({patient_id:cur,date_j:g1(),descr:$('ds').value,cost:en($('co').value)})}else{if(!en($('am').value))return;await sb.from('payments').insert({patient_id:cur,date_j:g2(),amount:en($('am').value),descr:$('pd2').value})}show(cur)}
+const del=(t,id)=>cf('این مورد حذف شود؟',async()=>{await sb.from(t).delete().eq('id',id);show(cur)});
+const delP=()=>cf('کل پرونده حذف شود؟',async()=>{await sb.from('patients').delete().eq('id',cur);cur=null;$('pd').innerHTML='';loadP()});
 </script></body></html>
