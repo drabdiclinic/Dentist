@@ -1,0 +1,46 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>کلینیک ارتودنسی عبدی | دکتر فاطمه عبدی</title>
+<meta name="description" content="کلینیک دندانپزشکی و ارتودنسی دکتر فاطمه عبدی؛ نوبت‌دهی آنلاین">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<header><div class="w"><a href="#"><img src="assets/logo.png" alt="ارتودنسی عبدی"></a>
+<nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a></nav>
+<a class="btn" href="#booking">دریافت نوبت</a></div></header>
+<div class="hero"><div class="w"><div style="padding-bottom:40px">
+<h1>لبخندی منظم و سالم،<br>با مراقبت دقیق</h1>
+<p>دکتر فاطمه عبدی؛ ارتودنسی، زیبایی و درمان‌های دندانپزشکی با برنامه درمانی شخصی برای هر بیمار.</p>
+<a class="btn" href="#booking">نوبت ویزیت</a><a class="btn o" href="#services">خدمات کلینیک</a></div>
+<img src="assets/doctor.png" alt="دکتر فاطمه عبدی"></div></div>
+<div class="wire"></div>
+<section id="services"><div class="w"><h2>خدمات</h2><p class="sub">درمان‌هایی که در کلینیک انجام می‌شود</p>
+<div class="g">
+<div class="card"><h3>ارتودنسی ثابت و شفاف</h3><p>اصلاح ردیف دندان‌ها و فک با براکت یا الاینر.</p></div>
+<div class="card"><h3>زیبایی و لمینت</h3><p>طراحی لبخند، کامپوزیت و لمینت.</p></div>
+<div class="card"><h3>ترمیم و درمان ریشه</h3><p>پر کردن، عصب‌کشی و ترمیم دندان‌های آسیب‌دیده.</p></div>
+<div class="card"><h3>جرم‌گیری و بلیچینگ</h3><p>پاکسازی حرفه‌ای و سفید کردن دندان.</p></div>
+</div></div></section>
+<section id="about" class="alt"><div class="w"><h2>دکتر فاطمه عبدی</h2>
+<p class="sub" style="max-width:620px">دندانپزشک و ارتودنتیست. در هر جلسه، مراحل درمان، هزینه و زمان‌بندی برای بیمار شفاف توضیح داده می‌شود و پرونده درمانی هر بیمار به‌صورت منظم ثبت و پیگیری می‌شود.</p>
+<p style="color:var(--mut)">(متن معرفی، سوابق و مدارک را بعداً اینجا اضافه می‌کنیم.)</p></div></section>
+<section id="booking"><div class="w"><h2>نوبت‌دهی</h2><p class="sub">تاریخ دلخواه را به شمسی انتخاب کنید؛ منشی برای تأیید با شما تماس می‌گیرد.</p>
+<form class="f" id="bf">
+<div><label>نام و نام خانوادگی</label><input name="name" required></div>
+<div><label>شماره تماس</label><input name="phone" inputmode="tel" pattern="0?9\d{9}" title="شماره موبایل مثل 09123456789" required></div>
+<div class="full"><label>تاریخ درخواستی (شمسی)</label><div id="jd"></div></div>
+<div><label>زمان مناسب</label><select name="time"><option>صبح</option><option>عصر</option></select></div>
+<div><label>نوع مراجعه</label><select name="type"><option>مشاوره ارتودنسی</option><option>ترمیم و درمان</option><option>زیبایی</option><option>جرم‌گیری</option><option>سایر</option></select></div>
+<div class="full"><label>توضیحات (اختیاری)</label><textarea name="note" rows="3"></textarea></div>
+<div class="full"><button class="btn">ثبت درخواست نوبت</button><div class="msg" id="ok" role="status"></div></div>
+</form></div></section>
+<footer>© کلینیک ارتودنسی عبدی · آدرس و تلفن را اینجا اضافه کنید · <a href="admin.html">ورود مدیریت</a></footer>
+<script src="assets/app.js"></script>
+<script>
+const get=jpicker(document.getElementById('jd'));
+document.getElementById('bf').onsubmit=e=>{e.preventDefault();
+const f=Object.fromEntries(new FormData(e.target)),t=jtoday(),date=get(),ok=document.getElementById('ok');
+ok.style.display='block';
+if(date<jstr(t.y,t.m,t.d)){ok.style.cssText='display:block;background:#fde8e8;color:var(--bad)';ok.textContent='تاریخ انتخابی گذشته است؛ تاریخ امروز یا بعد را انتخاب کنید.';return}
+const r=DB.get('requests');r.push({id:Date.now(),...f,date,status:'در انتظار',created:jstr(t.y,t.m,t.d)});DB.set('requests',r);
+ok.style.cssText='display:block';ok.textContent='درخواست شما برای '+fa(date)+' ثبت شد. منشی به‌زودی تماس می‌گیرد.';e.target.reset()};
+</script></body></html>
