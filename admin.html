@@ -8,11 +8,12 @@
 <div id="app" hidden>
 <div class="top"><div class="w"><div style="display:flex;align-items:center"><img src="assets/logo.png" alt=""><b>پنل مدیریت</b></div>
 <div><a href="index.html" style="margin-left:16px">مشاهده سایت</a><a href="#" onclick="sb.auth.signOut().then(()=>location.reload())">خروج</a></div></div></div>
-<div class="w"><div class="tabs"><button id="t1" class="on" onclick="tab(1)">درخواست‌های نوبت</button><button id="t2" onclick="tab(2)">مشاهده پرونده بیماران</button></div>
+<div class="w"><div class="tabs"><button id="t1" class="on" onclick="tab(1)">درخواست‌های نوبت</button><button id="t2" onclick="tab(2)">پرونده بیماران</button></div>
 <div id="p1" class="tw"></div>
-<div id="p2" hidden><div class="pl"><div><div class="card" style="margin-bottom:12px"><input id="sq" placeholder="جستجوی بیمار" oninput="list()"><br><br><input id="npn" placeholder="نام بیمار جدید"><br><br><input id="npp" placeholder="شماره تماس" inputmode="tel"><br><br><button class="btn s" onclick="newP()">+ افزودن بیمار</button></div><div class="li" id="pl"></div></div><div id="pd"><p class="sub">یک بیمار را انتخاب کنید یا بیمار جدید بسازید.</p></div></div></div>
+<div id="p2" hidden><div class="pl"><div><div class="card" style="margin-bottom:12px"><input id="sq" placeholder="جستجوی بیمار" oninput="list()"><br><br><input id="npn" placeholder="نام بیمار جدید"><br><br><input id="npp" placeholder="شماره تماس" inputmode="tel"><br><br><button class="btn s" onclick="newP()">+ افزودن بیمار</button></div><button class="btn o s" style="width:100%;margin-bottom:12px" onclick="exportX()">⬇ خروجی Excel همه پرونده‌ها</button><div class="li" id="pl"></div></div><div id="pd"><p class="sub">یک بیمار را انتخاب کنید یا بیمار جدید بسازید.</p></div></div></div>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
@@ -30,26 +31,39 @@ const st=async(id,s)=>{await sb.from('requests').update({status:s}).eq('id',id);
 const rm=id=>cf('این درخواست حذف شود؟',async()=>{await sb.from('requests').delete().eq('id',id);reqs()});
 // patients
 async function loadP(){const{data}=await sb.from('patients').select('*').order('created_at',{ascending:false});P=data||[];list()}
-function list(){const q=$('sq').value.trim(),p=P.filter(x=>x.name.includes(q)||(x.phone||'').includes(q));
-$('pl').innerHTML=p.map(x=>`<div class="${x.id==cur?'on':''}" onclick="show(${x.id})">${esc(x.name)}<br><small>${fa(esc(x.phone))}</small></div>`).join('')||'<div>بیماری ثبت نشده</div>'}
-async function newP(){const name=$('npn').value.trim(),phone=$('npp').value.trim();if(!name){$('npn').focus();return}
-const{data,error}=await sb.from('patients').insert({name,phone}).select().single();if(error)return alert('ثبت نشد');$('npn').value=$('npp').value='';await loadP();show(data.id)}
+function list(){const q=dg($('sq').value.trim()),p=P.filter(x=>x.name.includes(q)||dg(x.phone||'').includes(q)||String(x.file_no).includes(q));
+$('pl').innerHTML=p.map(x=>`<div class="${x.id==cur?'on':''}" onclick="show(${x.id})">${esc(x.name)}<br><small>پرونده ${fa(x.file_no)} · ${fa(esc(x.phone))}</small></div>`).join('')||'<div>بیماری ثبت نشده</div>'}
+async function newP(){const name=$('npn').value.trim(),phone=dg($('npp').value.trim());if(!name){$('npn').focus();return}
+const{data,error}=await sb.from('patients').insert({name,phone}).select().single();if(error)return alert('ثبت نشد؛ فایل supabase-setup.sql را اجرا کرده‌اید؟');$('npn').value=$('npp').value='';await loadP();show(data.id)}
+const num=(v,k)=>`<input class="ci m ${k}" inputmode="numeric" dir="ltr" value="${fa(v||0)}">`;
 async function show(id){cur=id;list();const p=P.find(x=>x.id==id);
-const[{data:tx},{data:pay}]=await Promise.all([sb.from('treatments').select('*').eq('patient_id',id).order('date_j'),sb.from('payments').select('*').eq('patient_id',id).order('date_j')]);
-const cost=tx.reduce((s,x)=>s+ +x.cost,0),paid=pay.reduce((s,x)=>s+ +x.amount,0);
-$('pd').innerHTML=`<h2>${esc(p.name)}</h2><p class="sub">${fa(esc(p.phone))}</p>
-<div class="sum"><div class="card"><b>${money(cost)}</b>کل هزینه</div><div class="card"><b>${money(paid)}</b>پرداخت‌شده</div><div class="card"><b style="color:${cost-paid>0?'var(--bad)':'var(--ok)'}">${money(cost-paid)}</b>مانده</div></div>
-<label>اطلاعات و سابقه پزشکی</label><textarea id="nt" rows="3" onchange="saveN(this.value)">${esc(p.notes)}</textarea>
-<h3 style="margin-top:22px;color:var(--n)">روند اقدامات انجام‌شده</h3>
-<div class="tw"><table><tr><th>تاریخ</th><th>اقدام</th><th>هزینه</th><th></th></tr>${tx.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${esc(x.descr)}</td><td>${money(x.cost)}</td><td><button class="btn s d" onclick="del('treatments',${x.id})">حذف</button></td></tr>`).join('')}</table></div>
-<div class="row"><div id="d1"></div><input id="ds" placeholder="شرح اقدام"><input id="co" inputmode="numeric" placeholder="هزینه (تومان)"><button class="btn" onclick="add('tx')">افزودن</button></div>
-<h3 style="margin-top:22px;color:var(--n)">پرداختی‌ها</h3>
-<div class="tw"><table><tr><th>تاریخ</th><th>مبلغ</th><th>توضیح</th><th></th></tr>${pay.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${money(x.amount)}</td><td>${esc(x.descr)}</td><td><button class="btn s d" onclick="del('payments',${x.id})">حذف</button></td></tr>`).join('')}</table></div>
-<div class="row"><div id="d2"></div><input id="am" inputmode="numeric" placeholder="مبلغ (تومان)"><input id="pd2" placeholder="توضیح (نقد/کارت)"><button class="btn" onclick="add('pay')">ثبت پرداخت</button></div>
-<br><button class="btn s d" onclick="delP()">حذف پرونده</button>`;
-window.g1=jpicker($('d1'));window.g2=jpicker($('d2'))}
-const saveN=v=>sb.from('patients').update({notes:v}).eq('id',cur).then(()=>{P.find(x=>x.id==cur).notes=v});
-async function add(t){if(t=='tx'){if(!$('ds').value)return;await sb.from('treatments').insert({patient_id:cur,date_j:g1(),descr:$('ds').value,cost:en($('co').value)})}else{if(!en($('am').value))return;await sb.from('payments').insert({patient_id:cur,date_j:g2(),amount:en($('am').value),descr:$('pd2').value})}show(cur)}
-const del=(t,id)=>cf('این مورد حذف شود؟',async()=>{await sb.from(t).delete().eq('id',id);show(cur)});
+const{data:v}=await sb.from('visits').select('*').eq('patient_id',id).order('date_j').order('id');const V=v||[];
+const sp=V.reduce((s,x)=>s+ +x.paid,0),sd=V.reduce((s,x)=>s+ +x.debt,0);
+$('pd').innerHTML=`<h2>${esc(p.name)}</h2><span class="tag ok">پرونده شماره ${fa(p.file_no)}</span>
+<div class="row" style="margin-top:12px"><input value="${esc(p.name)}" placeholder="نام" onchange="savP('name',this.value)"><input value="${esc(p.phone)}" dir="ltr" placeholder="شماره تماس" onchange="savP('phone',dg(this.value))"></div>
+<label>اطلاعات و سابقه پزشکی</label><textarea rows="2" onchange="savP('notes',this.value)">${esc(p.notes)}</textarea>
+<h3 style="margin:20px 0 4px;color:var(--n)">جدول پرونده (همه خانه‌ها قابل ویرایش است)</h3>
+<div class="tw"><table class="rt"><thead><tr><th>ردیف</th><th>تاریخ</th><th>اقدام انجام شده</th><th>واریزی</th><th>بدهی</th><th></th></tr></thead><tbody>
+${V.map((x,i)=>`<tr data-id="${x.id}"><td><span class="rn">${fa(i+1)}</span></td><td><input class="ci" dir="ltr" value="${fa(esc(x.date_j))}" onchange="sv(${x.id},'date_j',this)"></td><td><input class="ci" style="min-width:180px" value="${esc(x.descr)}" onchange="sv(${x.id},'descr',this)"></td><td>${num(x.paid,'ok').replace('<input','<input onchange="sv('+x.id+`,'paid',this)"`)}</td><td>${num(x.debt,'bad').replace('<input','<input onchange="sv('+x.id+`,'debt',this)"`)}</td><td><button class="btn s d" onclick="delRow(${x.id})">حذف</button></td></tr>`).join('')}
+</tbody><tfoot><tr><td colspan="3">جمع</td><td>${money(sp)}</td><td>${money(sd)}</td><td></td></tr></tfoot></table></div>
+<button class="btn s" onclick="addRow()">+ ردیف جدید</button>
+<div class="nx"><h3>نوبت مراجعه بعدی</h3><div class="row"><div id="nd"></div><input id="nt2" type="time" dir="ltr"></div>
+<button class="btn s" onclick="saveNx()">ذخیره نوبت</button> <button class="btn s o" onclick="clrNx()">پاک کردن نوبت</button>
+<p style="margin-top:8px;color:var(--mut)">ثبت‌شده: ${p.next_date?fa(p.next_date)+' ساعت '+fa(p.next_time||''):'—'}</p></div>
+<br><button class="btn s d" onclick="delP()">حذف کل پرونده</button>`;
+window.gn=jpicker($('nd'));if(p.next_date){gn.set(p.next_date);$('nt2').value=p.next_time||''}}
+async function savP(k,v){await sb.from('patients').update({[k]:v}).eq('id',cur);P.find(x=>x.id==cur)[k]=v;if(k!='notes'){list();if(k=='name')show(cur)}}
+async function sv(id,f,el){const num=f=='paid'||f=='debt',v=num?en(el.value):dg(el.value).replace(/-/g,'/');await sb.from('visits').update({[f]:v}).eq('id',id);if(num)show(cur)}
+async function addRow(){const t=jtoday();await sb.from('visits').insert({patient_id:cur,date_j:jstr(t.y,t.m,t.d),descr:'',paid:0,debt:0});show(cur)}
+const delRow=id=>cf('این ردیف حذف شود؟',async()=>{await sb.from('visits').delete().eq('id',id);show(cur)});
+async function saveNx(){const d=gn(),t=$('nt2').value;await sb.from('patients').update({next_date:d,next_time:t}).eq('id',cur);Object.assign(P.find(x=>x.id==cur),{next_date:d,next_time:t});show(cur)}
+async function clrNx(){await sb.from('patients').update({next_date:null,next_time:null}).eq('id',cur);Object.assign(P.find(x=>x.id==cur),{next_date:null,next_time:null});show(cur)}
 const delP=()=>cf('کل پرونده حذف شود؟',async()=>{await sb.from('patients').delete().eq('id',cur);cur=null;$('pd').innerHTML='';loadP()});
+async function exportX(){const[{data:ps},{data:vs}]=await Promise.all([sb.from('patients').select('*').order('file_no'),sb.from('visits').select('*').order('date_j').order('id')]);
+const rows=[];(ps||[]).forEach(p=>{const nx=p.next_date?p.next_date+' '+(p.next_time||''):'',base={'شماره پرونده':p.file_no,'نام':p.name,'تلفن':p.phone,'نوبت بعدی':nx},mine=(vs||[]).filter(v=>v.patient_id==p.id);
+if(!mine.length)rows.push({...base,'ردیف':'','تاریخ':'','اقدام انجام شده':'','واریزی':'','بدهی':''});
+mine.forEach((v,i)=>rows.push({...base,'ردیف':i+1,'تاریخ':v.date_j,'اقدام انجام شده':v.descr,'واریزی':v.paid,'بدهی':v.debt}))});
+const cols=['شماره پرونده','نام','تلفن','ردیف','تاریخ','اقدام انجام شده','واریزی','بدهی','نوبت بعدی'];
+if(typeof XLSX!=='undefined'){const ws=XLSX.utils.json_to_sheet(rows,{header:cols});ws['!cols']=[10,18,14,6,12,34,12,12,18].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'پرونده بیماران');wb.Workbook={Views:[{RTL:true}]};XLSX.writeFile(wb,'patients-files.xlsx')}
+else{const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"',csv='\ufeff'+[cols.map(q).join(',')].concat(rows.map(r=>cols.map(c=>q(r[c])).join(','))).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='patients-files.csv';a.click()}}
 </script></body></html>

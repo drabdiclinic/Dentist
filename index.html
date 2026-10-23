@@ -5,8 +5,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css"></head><body>
 <header><div class="w"><a href="#"><img src="assets/logo.png" alt="ارتودنسی عبدی"></a>
-<nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a></nav>
-<a class="btn" href="#booking">دریافت نوبت</a></div></header>
+<nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a><a href="#" onclick="openRec();return false">پرونده بیمار</a></nav>
+<div style="display:flex;gap:8px"><a class="btn o" href="#" onclick="openRec();return false">پرونده بیمار</a><a class="btn" href="#booking">دریافت نوبت</a></div></div></header>
 <div class="hero"><div class="w"><div style="padding-bottom:20px">
 <h1>لبخندِ <b>رویایی</b>،<br>با دقت و مراقبت</h1>
 <p>دکتر فاطمه عبدی؛ ارتودنسی و زیبایی دندان با برنامه درمانی اختصاصی برای هر بیمار.</p>
@@ -41,4 +41,28 @@ if(!sb)return bad('اتصال به سرور برقرار نیست.');
 const{error}=await sb.from('requests').insert({name:f.name,phone:f.phone,date_j:date,time:f.time,type:f.type,note:f.note});
 if(error)return bad('ثبت انجام نشد؛ دوباره تلاش کنید.');
 ok.style.cssText='display:block';ok.textContent='درخواست شما برای '+fa(date)+' ثبت شد. منشی به‌زودی تماس می‌گیرد.';e.target.reset()};
+</script><div class="mo" id="rm" hidden><div class="mb"><button class="x" onclick="closeRec()" aria-label="بستن">×</button>
+<div id="rl"><h2>پرونده بیمار</h2><p class="sub">برای مشاهده پرونده، شماره پرونده و شماره تماس خود را وارد کنید.</p>
+<div class="f1"><label>شماره پرونده</label><input id="rf" inputmode="numeric" autocomplete="off"><label>شماره تماس</label><input id="rp" inputmode="tel" autocomplete="off"><br><button class="btn" id="rb">ورود</button><p class="er" id="re" role="alert"></p></div></div>
+<div id="rr" hidden></div></div></div>
+<script>
+const $r=id=>document.getElementById(id);
+function openRec(){$r('rm').hidden=false;$r('rl').hidden=false;$r('rr').hidden=true;$r('re').textContent='';setTimeout(()=>$r('rf').focus(),50)}
+function closeRec(){$r('rm').hidden=true;$r('rf').value=$r('rp').value=''}
+$r('rm').addEventListener('click',e=>{if(e.target.id=='rm')closeRec()});
+['rf','rp'].forEach(i=>$r(i).addEventListener('keydown',e=>{if(e.key==='Enter')lookup()}));
+$r('rb').onclick=lookup;
+async function lookup(){const f=en($r('rf').value),ph=dg($r('rp').value).trim(),er=$r('re');er.textContent='';
+if(!f||ph.replace(/\D/g,'').length<10){er.textContent='شماره پرونده و شماره تماس را کامل وارد کنید.';return}
+if(!sb){er.textContent='اتصال به سرور برقرار نیست.';return}
+$r('rb').disabled=true;const{data,error}=await sb.rpc('patient_lookup',{p_file:f,p_phone:ph});$r('rb').disabled=false;
+if(error){er.textContent='خطا در ارتباط؛ دوباره تلاش کنید.';return}
+if(!data){er.textContent='پرونده‌ای با این مشخصات پیدا نشد.';return}
+const R=data.rows||[],sp=R.reduce((s,x)=>s+ +x.paid,0),sd=R.reduce((s,x)=>s+ +x.debt,0),pl=(n,c)=>`<span class="pill ${n>0?c:'z'}">${money(n)}</span>`;
+$r('rl').hidden=true;$r('rr').hidden=false;
+$r('rr').innerHTML=`<h2>پرونده شماره ${fa(data.file_no)}</h2><p class="sub">${esc(data.name)}</p>
+<div class="tw"><table class="rt"><thead><tr><th>ردیف</th><th>تاریخ</th><th>اقدام انجام شده</th><th>واریزی</th><th>بدهی</th></tr></thead><tbody>${R.map((x,i)=>`<tr><td><span class="rn">${fa(i+1)}</span></td><td>${fa(esc(x.date_j))}</td><td>${esc(x.descr)}</td><td>${pl(+x.paid,'ok')}</td><td>${pl(+x.debt,'bad')}</td></tr>`).join('')||'<tr><td colspan="5">هنوز اقدامی ثبت نشده است.</td></tr>'}</tbody>
+<tfoot><tr><td colspan="3">جمع</td><td>${money(sp)}</td><td>${money(sd)}</td></tr></tfoot></table></div>
+<div class="nx"><h3>نوبت مراجعه بعدی</h3><div class="big">${data.next_date?fa(data.next_date)+(data.next_time?' — ساعت '+fa(data.next_time):''):'هنوز نوبتی ثبت نشده است'}</div></div>
+<br><button class="btn o s" onclick="closeRec()">خروج</button>`}
 </script></body></html>
