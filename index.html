@@ -58,11 +58,12 @@ if(!sb){er.textContent='اتصال به سرور برقرار نیست.';return}
 $r('rb').disabled=true;const{data,error}=await sb.rpc('patient_lookup',{p_file:f,p_phone:ph});$r('rb').disabled=false;
 if(error){er.textContent='خطا در ارتباط؛ دوباره تلاش کنید.';return}
 if(!data){er.textContent='پرونده‌ای با این مشخصات پیدا نشد.';return}
-const R=data.rows||[],sp=R.reduce((s,x)=>s+ +x.paid,0),sd=R.reduce((s,x)=>s+ +x.debt,0),pl=(n,c)=>`<span class="pill ${n>0?c:'z'}">${money(n)}</span>`;
+const R=data.rows||[],I=data.inst||[],pill=(n,c)=>`<span class="pill ${n>0?c:'z'}">${money(n)}</span>`;
 $r('rl').hidden=true;$r('rr').hidden=false;
-$r('rr').innerHTML=`<h2>پرونده شماره ${fa(data.file_no)}</h2><p class="sub">${esc(data.name)}</p>
-<div class="tw"><table class="rt"><thead><tr><th>ردیف</th><th>تاریخ</th><th>اقدام انجام شده</th><th>واریزی</th><th>بدهی</th></tr></thead><tbody>${R.map((x,i)=>`<tr><td><span class="rn">${fa(i+1)}</span></td><td>${fa(esc(x.date_j))}</td><td>${esc(x.descr)}</td><td>${pl(+x.paid,'ok')}</td><td>${pl(+x.debt,'bad')}</td></tr>`).join('')||'<tr><td colspan="5">هنوز اقدامی ثبت نشده است.</td></tr>'}</tbody>
-<tfoot><tr><td colspan="3">جمع</td><td>${money(sp)}</td><td>${money(sd)}</td></tr></tfoot></table></div>
+$r('rr').innerHTML=`<h2>پرونده شماره ${fa(data.file_no)}</h2><p class="sub">${esc(data.name)} · <span class="pill ${data.status=='خاتمه'?'z':'ok'}">${esc(data.status||'فعال')}</span></p>
+<div class="tw"><table class="rt"><thead><tr><th>ردیف</th><th>تاریخ مراجعه</th><th>شرح اقدام</th></tr></thead><tbody>${R.map((x,i)=>`<tr><td><span class="rn">${fa(i+1)}</span></td><td>${fa(esc(x.date_j))}</td><td>${esc(x.descr)}</td></tr>`).join('')||'<tr><td colspan="3">هنوز اقدامی ثبت نشده است.</td></tr>'}</tbody></table></div>
+<h3 style="margin:14px 0 4px;color:var(--n)">پرداخت‌ها</h3><div class="sum"><div class="card"><b>${money(data.paid)}</b>پرداخت‌شده</div><div class="card"><b>${money(data.debt)}</b>باقی‌مانده</div></div>
+${I.length?`<div class="tw"><table class="rt"><thead><tr><th></th><th>تاریخ</th><th>مبلغ</th><th>تاریخ پرداخت</th><th>وضعیت</th></tr></thead><tbody>${I.map(x=>`<tr><td><b>${lbl(x)}</b></td><td>${fa(esc(x.due_j))}</td><td>${money(x.amount)}</td><td>${fa(esc(x.paid_j))}</td><td><span class="pill ${x.paid?'ok':'bad'}">${x.paid?'پرداخت‌شده':'پرداخت‌نشده'}</span></td></tr>`).join('')}</tbody></table></div>`:''}
 <div class="nx"><h3>نوبت مراجعه بعدی</h3><div class="big">${data.next_date?fa(data.next_date)+(data.next_time?' — ساعت '+fa(data.next_time):''):'هنوز نوبتی ثبت نشده است'}</div></div>
 <br><button class="btn o s" onclick="closeRec()">خروج</button>`}
 </script></body></html>
