@@ -5,14 +5,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css"></head><body>
 <header><div class="w"><a href="#"><img src="assets/logo.png" alt="ارتودنسی عبدی"></a>
-<nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a><a href="#" onclick="openRec();return false">پرونده بیمار</a></nav>
-<div style="display:flex;gap:8px"><a class="btn o" href="#" onclick="openRec();return false">پرونده بیمار</a><a class="btn" href="#booking">دریافت نوبت</a></div></div></header>
+<nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a><a href="#contact">تماس با ما</a><a href="#" onclick="openRec();return false">پرونده بیمار</a></nav>
+<div style="display:flex;gap:8px"><a class="btn o" href="#" onclick="openRec();return false">پرونده بیمار</a><a class="btn" href="#booking">نوبت آنلاین</a></div></div></header>
 <div class="hero"><div class="w"><div style="padding-bottom:20px">
 <h1>لبخندِ <b>رویایی</b>،<br>با دقت و مراقبت</h1>
 <p>دکتر فاطمه عبدی؛ ارتودنسی و زیبایی دندان با برنامه درمانی اختصاصی برای هر بیمار.</p>
-<a class="btn" href="#booking">نوبت ویزیت</a><a class="btn o" href="#services">خدمات کلینیک</a></div>
+<a class="btn" href="#booking">نوبت آنلاین</a><a class="btn o" href="#services">خدمات کلینیک</a></div>
 <div class="vis"><div class="disc"></div><svg viewBox="0 0 100 115" class="tooth"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#dff4fb"/><stop offset="1" stop-color="#8fd3ea"/></linearGradient><filter id="f"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#00314f" flood-opacity=".45"/></filter></defs><path filter="url(#f)" fill="url(#g)" d="M50 10C30 0 10 15 12 40c2 20 10 30 14 55 2 13 10 15 14 0 4-15 6-23 10-23s6 8 10 23c4 15 12 13 14 0 4-25 12-35 14-55C90 15 70 0 50 10Z"/><ellipse cx="32" cy="28" rx="9" ry="14" fill="#fff" opacity=".75" transform="rotate(-20 32 28)"/></svg><img class="doc" src="assets/doctor.png" alt="دکتر فاطمه عبدی"><div class="chip" style="top:90px;right:0">نوبت‌دهی آنلاین</div><div class="chip" style="bottom:130px;left:0">پرونده دیجیتال بیمار</div></div></div></div>
 <div class="wire"></div>
+<section id="highlights" hidden><div class="w"><div class="hl" id="hl"></div></div></section>
 <section id="services"><div class="w"><h2>خدمات</h2><p class="sub">درمان‌هایی که در کلینیک انجام می‌شود</p>
 <div class="g"><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4C5 4.500 4 6.500 4.500 9c.5 2.500 1.500 4 2 7 .3 2 1.500 3 2.300 1 .5-1.500.8-3 2.200-3s1.700 1.500 2.200 3c.8 2 2 1 2.300-1 .5-3 1.500-4.500 2-7 .5-2.500-.5-4.500-2.500-5-1.800-.5-3 .5-4 .5S8.800 3.500 7 4z"/><path d="M3 10h18"/><rect x="10" y="8.500" width="4" height="3" rx=".5" fill="currentColor"/></svg></div><h3>ارتودنسی ثابت و شفاف</h3><p>اصلاح ردیف دندان‌ها و فک با براکت یا الاینر.</p></div><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3l1.800 4.800L17.600 9.600 12.800 11.400 11 16.200 9.200 11.400 4.400 9.600 9.200 7.800z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></div><h3>زیبایی و لمینت</h3><p>طراحی لبخند، کامپوزیت و لمینت.</p></div><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4C5 4.500 4 6.500 4.500 9c.5 2.500 1.500 4 2 7 .3 2 1.500 3 2.300 1 .5-1.500.8-3 2.200-3s1.700 1.500 2.200 3c.8 2 2 1 2.300-1 .5-3 1.500-4.500 2-7 .5-2.500-.5-4.500-2.500-5-1.800-.5-3 .5-4 .5S8.800 3.500 7 4z"/><circle cx="12" cy="9" r="2" fill="currentColor"/></svg></div><h3>ترمیم و پرکردن دندان</h3><p>پرکردن دندان‌های پوسیده یا شکسته با مواد همرنگ دندان.</p></div><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4C5 4.500 4 6.500 4.500 9c.5 2.500 1.500 4 2 7 .3 2 1.500 3 2.300 1 .5-1.500.8-3 2.200-3s1.700 1.500 2.200 3c.8 2 2 1 2.300-1 .5-3 1.500-4.500 2-7 .5-2.500-.5-4.500-2.500-5-1.800-.5-3 .5-4 .5S8.800 3.500 7 4z"/><path d="M10.500 12v5M13.500 12v5"/></svg></div><h3>درمان ریشه (عصب‌کشی)</h3><p>درمان دندان‌های عفونی و دردناک و حفظ دندان طبیعی.</p></div><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17L3 7.500l5 3.500 4-6 4 6 5-3.500L20 17z"/><path d="M5 20.500h14"/></svg></div><h3>روکش دندان</h3><p>بازسازی دندان‌های آسیب‌دیده با روکش زیبا و مقاوم.</p></div><div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.500 6 11a6 6 0 0 1-12 0c0-4.500 6-11 6-11z"/><path d="M9.500 14.500a2.500 2.500 0 0 0 2 2.500"/></svg></div><h3>جرم‌گیری و بلیچینگ</h3><p>پاکسازی حرفه‌ای و سفید کردن دندان.</p></div></div></div></section>
 <section id="about" class="alt"><div class="w"><h2>دکتر فاطمه عبدی</h2>
@@ -22,25 +23,35 @@
 <form class="f" id="bf">
 <div><label>نام و نام خانوادگی</label><input name="name" required></div>
 <div><label>شماره تماس</label><input name="phone" inputmode="tel" pattern="0?9\d{9}" title="شماره موبایل مثل 09123456789" required></div>
-<div class="full"><label>تاریخ درخواستی (شمسی)</label><div id="jd"></div></div>
+<div class="full"><label>تاریخ درخواستی (شمسی)</label><div id="jd" style="position:relative"><input id="dsel" readonly placeholder="برای انتخاب تاریخ اینجا بزنید" style="cursor:pointer"><div class="pop" id="dpop" hidden></div><p class="lg"><i></i>روزهای قرمز نوبت نداریم و قابل انتخاب نیستند.</p></div></div>
 <div><label>زمان مناسب</label><select name="time"><option>صبح</option><option>عصر</option></select></div>
 <div><label>نوع مراجعه</label><select name="type"><option>مشاوره ارتودنسی</option><option>ترمیم و پرکردن دندان</option><option>درمان ریشه (عصب‌کشی)</option><option>روکش دندان</option><option>زیبایی و لمینت</option><option>جرم‌گیری و بلیچینگ</option><option>سایر</option></select></div>
 <div class="full"><label>توضیحات (اختیاری)</label><textarea name="note" rows="3"></textarea></div>
 <div class="full"><button class="btn">ثبت درخواست نوبت</button><div class="msg" id="ok" role="status"></div></div>
 </form></div></section>
-<footer>© کلینیک ارتودنسی عبدی · آدرس و تلفن را اینجا اضافه کنید · <a href="admin.html">ورود مدیریت</a></footer>
+<section id="contact" class="alt"><div class="w"><h2>تماس با ما</h2><p class="sub">آدرس و راه‌های ارتباطی کلینیک</p><div class="g">
+<div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.200 7-11a7 7 0 1 0-14 0c0 4.800 7 11 7 11z"/><circle cx="12" cy="10" r="2.500"/></svg></div><h3>آدرس</h3><p>زرند، خیابان چمران، نبش خیابان اقبال لاهوری، ساختمان افرا، طبقه ۱</p></div>
+<div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></div><h3>تلفن</h3><p><a href="tel:03433435302" dir="ltr">۰۳۴-۳۳۴۳۵۳۰۲</a><br><a href="tel:09373850677" dir="ltr">۰۹۳۷۳۸۵۰۶۷۷</a></p></div>
+<div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><h3>ایمیل</h3><p><a href="mailto:dr.abdi.ortho@gmail.com" dir="ltr">dr.abdi.ortho@gmail.com</a></p></div>
+</div></div></section>
+<footer>© کلینیک ارتودنسی عبدی · زرند، خیابان چمران · ۰۳۴-۳۳۴۳۵۳۰۲ · <a href="admin.html">ورود مدیریت</a></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
-const get=jpicker(document.getElementById('jd'));
+let selDate='',CW=[],CD=[];
+const dsel=document.getElementById('dsel'),dpop=document.getElementById('dpop'),isOff=(ds,wd)=>CW.includes(wd)||CD.includes(ds),td=()=>{const t=jtoday();return jstr(t.y,t.m,t.d)};
+const cal=jcal(dpop,{isOff,canPick:(ds,wd,off)=>!off&&ds>=td(),pick:ds=>{selDate=ds;dsel.value=fa(ds);dpop.hidden=true},sel:()=>selDate});
+dsel.onclick=()=>{dpop.hidden=!dpop.hidden};
+document.addEventListener('click',e=>{if(!e.composedPath().includes(document.getElementById('jd')))dpop.hidden=true});
+(async()=>{if(!sb)return;const{data}=await sb.from('settings').select('*');(data||[]).forEach(r=>{if(r.key=='closed_weekdays')CW=r.value||[];if(r.key=='closed_dates')CD=r.value||[]});cal.draw()})();
 document.getElementById('bf').onsubmit=async e=>{e.preventDefault();
-const f=Object.fromEntries(new FormData(e.target)),t=jtoday(),date=get(),ok=document.getElementById('ok'),bad=m=>{ok.style.cssText='display:block;background:#ff8a8a33;color:var(--bad)';ok.textContent=m};
-if(date<jstr(t.y,t.m,t.d))return bad('تاریخ انتخابی گذشته است؛ تاریخ امروز یا بعد را انتخاب کنید.');
+const f=Object.fromEntries(new FormData(e.target)),t=jtoday(),date=selDate,ok=document.getElementById('ok'),bad=m=>{ok.style.cssText='display:block;background:#ff8a8a33;color:var(--bad)';ok.textContent=m};
+if(!date)return bad('لطفاً تاریخ درخواستی را انتخاب کنید.');if(isOff(date,jmap()[date]))return bad('در این روز نوبت نداریم؛ روز دیگری را انتخاب کنید.');if(date<jstr(t.y,t.m,t.d))return bad('تاریخ انتخابی گذشته است؛ تاریخ امروز یا بعد را انتخاب کنید.');
 if(!sb)return bad('اتصال به سرور برقرار نیست.');
 const{error}=await sb.from('requests').insert({name:f.name,phone:f.phone,date_j:date,time:f.time,type:f.type,note:f.note});
 if(error)return bad('ثبت انجام نشد؛ دوباره تلاش کنید.');
-ok.style.cssText='display:block';ok.textContent='درخواست شما برای '+fa(date)+' ثبت شد. منشی به‌زودی تماس می‌گیرد.';e.target.reset()};
+ok.style.cssText='display:block';ok.textContent='درخواست شما برای '+fa(date)+' ثبت شد. منشی به‌زودی تماس می‌گیرد.';e.target.reset();selDate='';cal.draw()};
 </script><div class="mo" id="rm" hidden><div class="mb"><button class="x" onclick="closeRec()" aria-label="بستن">×</button>
 <div id="rl"><h2>پرونده بیمار</h2><p class="sub">برای مشاهده پرونده، شماره پرونده و شماره تماس خود را وارد کنید.</p>
 <div class="f1"><label>شماره پرونده</label><input id="rf" inputmode="numeric" autocomplete="off"><label>شماره تماس</label><input id="rp" inputmode="tel" autocomplete="off"><br><button class="btn" id="rb">ورود</button><p class="er" id="re" role="alert"></p></div></div>
@@ -66,4 +77,16 @@ $r('rr').innerHTML=`<h2>پرونده شماره ${fa(data.file_no)}</h2><p class
 ${I.length?`<div class="tw"><table class="rt"><thead><tr><th></th><th>تاریخ</th><th>مبلغ</th><th>تاریخ پرداخت</th><th>وضعیت</th></tr></thead><tbody>${I.map(x=>`<tr><td><b>${lbl(x)}</b></td><td>${fa(esc(x.due_j))}</td><td>${money(x.amount)}</td><td>${fa(esc(x.paid_j))}</td><td><span class="pill ${x.paid?'ok':'bad'}">${x.paid?'پرداخت‌شده':'پرداخت‌نشده'}</span></td></tr>`).join('')}</tbody></table></div>`:''}
 <div class="nx"><h3>نوبت مراجعه بعدی</h3><div class="big">${data.next_date?fa(data.next_date)+(data.next_time?' — ساعت '+fa(data.next_time):''):'هنوز نوبتی ثبت نشده است'}</div></div>
 <br><button class="btn o s" onclick="closeRec()">خروج</button>`}
+</script>
+<script>
+rv(document.querySelectorAll('.hero h1,.hero p,.hero .btn'),'r');rv(document.querySelectorAll('.hero .vis'),'l',.2);
+rv(document.querySelectorAll('section h2,section .sub'));rv(document.querySelectorAll('#services .card'));
+rv(document.querySelectorAll('#about .w>p'),'r');rv(document.querySelectorAll('#contact .card'),'z');rv(document.querySelectorAll('#booking form'));
+</script>
+<script>
+(async()=>{if(!sb)return;const{data}=await sb.from('highlights').select('*').order('id');
+const ph='<svg viewBox="0 0 100 115" fill="#fff" fill-opacity=".85"><path d="M50 10C30 0 10 15 12 40c2 20 10 30 14 55 2 13 10 15 14 0 4-15 6-23 10-23s6 8 10 23c4 15 12 13 14 0 4-25 12-35 14-55C90 15 70 0 50 10Z"/></svg>';
+const R=(data||[]).filter(x=>x.title||x.body||x.image);if(!R.length)return;
+document.getElementById('hl').innerHTML=R.map(x=>`<article class="hb"><div class="ht">${x.title?`<h3>${esc(x.title)}</h3>`:''}<p>${esc(x.body).replace(/\n/g,'<br>')}</p></div><div class="hi">${x.image&&x.image.startsWith('data:image/')?`<img src="${x.image}" alt="${esc(x.title)}" loading="lazy">`:ph}</div></article>`).join('');
+document.getElementById('highlights').hidden=false;document.querySelectorAll('#hl .hb').forEach((el,i)=>rv([el],i%2?'l':'r'))})();
 </script></body></html>

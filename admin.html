@@ -10,8 +10,11 @@
 <div style="display:flex;align-items:center"><div id="bw" style="position:relative"><button class="bell" onclick="toggleN()" aria-label="اعلان‌ها"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>اعلان‌ها<b id="bc" hidden>۰</b></button>
 <div class="np" id="np" hidden><h4>اعلان‌ها (اقساط سررسیدشده)</h4><div id="nl"></div></div></div>
 <a href="index.html" style="margin-left:16px">مشاهده سایت</a><a href="#" onclick="sb.auth.signOut().then(()=>location.reload())">خروج</a></div></div></div>
-<div class="w"><div class="tabs"><button id="t1" class="on" onclick="tab(1)">درخواست‌های نوبت</button><button id="t2" onclick="tab(2)">پرونده بیماران</button></div>
+<div class="w"><div class="tabs"><button id="t1" class="on" onclick="tab(1)">درخواست‌های نوبت</button><button id="t2" onclick="tab(2)">پرونده بیماران</button><button id="t3" onclick="tab(3)">تقویم نوبت‌دهی</button><button id="t4" onclick="tab(4)">کادرهای صفحه اصلی</button></div>
 <div id="p1" class="tw"></div>
+<div id="p4" hidden><p class="sub">پنج کادر بالای بخش خدمات در سایت. عکس به نسبت ۴ به ۳ بریده و فشرده می‌شود. متن و عنوان با تغییر، خودکار ذخیره می‌شود.</p><div class="hg" id="hg"></div></div>
+<div id="p3" hidden><div class="card"><h3>روزهای هفته‌ای که نوبت نداریم</h3><p class="sub">روی روز بزنید تا قرمز (بدون نوبت) شود؛ دوباره بزنید تا عادی شود.</p><div class="wk" id="wk"></div></div>
+<div class="card adc" style="margin-top:16px"><h3>تاریخ‌های خاص</h3><p class="sub">روی هر تاریخ بزنید تا قرمز شود. در سایت، روزهای قرمز قابل انتخاب نیستند.</p><div id="ac"></div></div></div>
 <div id="p2" hidden>
 <div id="lv"><div class="top2">
 <div class="card"><h3>جستجوی بیمار</h3><input id="sq" placeholder="بر اساس شماره تماس یا شماره پرونده" oninput="pgN=0;plist()"></div>
@@ -30,17 +33,36 @@ const today=()=>{const t=jtoday();return jstr(t.y,t.m,t.d)};
 const nj=s=>{const a=dg(s).split(/\D+/).filter(Boolean).map(Number);return a.length>=3?jstr(a[0],a[1],a[2]):null};
 async function login(){if(!sb)return;const{error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(error)$('er').textContent='ایمیل یا رمز اشتباه است';else start()}
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-function start(){$('lg').hidden=true;$('app').hidden=false;reqs();loadP();notif()}
+function start(){$('lg').hidden=true;$('app').hidden=false;reqs();loadP();notif();loadSet();loadH()}
 (async()=>{if(!sb){$('er').textContent='اطلاعات Supabase در assets/config.js وارد نشده است';return}const{data}=await sb.auth.getSession();if(data.session)start()})();
 document.addEventListener('click',e=>{if(!e.target.closest('#bw'))$('np').hidden=true});
 const toggleN=()=>{$('np').hidden=!$('np').hidden};
-function tab(n){$('p1').hidden=n!=1;$('p2').hidden=n!=2;$('t1').className=n==1?'on':'';$('t2').className=n==2?'on':''}
+function tab(n){[1,2,3,4].forEach(i=>{$('p'+i).hidden=n!=i;$('t'+i).className=n==i?'on':''})}
 function cf(m,fn){const o=document.createElement('div');o.className='mo';o.style.zIndex=120;o.innerHTML=`<div class="card" style="text-align:center;margin:auto;background:#0b2a63"><p>${m}</p><br><button class="btn d">بله، حذف شود</button> <button class="btn o">انصراف</button></div>`;const b=o.querySelectorAll('button');b[0].onclick=()=>{o.remove();fn()};b[1].onclick=()=>o.remove();document.body.append(o)}
 // ---- requests
 async function reqs(){const{data:r}=await sb.from('requests').select('*').order('date_j');
-$('p1').innerHTML=r&&r.length?`<table><tr><th>تاریخ درخواستی</th><th>زمان</th><th>نام</th><th>تلفن</th><th>نوع</th><th>توضیحات</th><th>وضعیت</th><th></th></tr>${r.map(x=>`<tr><td>${fa(x.date_j)}</td><td>${esc(x.time)}</td><td>${esc(x.name)}</td><td>${fa(esc(x.phone))}</td><td>${esc(x.type)}</td><td>${esc(x.note)}</td><td><span class="tag ${x.status=='تأیید شد'?'ok':x.status=='رد شد'?'no':''}">${x.status}</span></td><td style="white-space:nowrap"><button class="btn s" onclick="st(${x.id},'تأیید شد')">تأیید</button> <button class="btn s o" onclick="st(${x.id},'رد شد')">رد</button> <button class="btn s d" onclick="rm(${x.id})">حذف</button></td></tr>`).join('')}</table>`:'<p class="sub">هنوز درخواستی ثبت نشده است.</p>'}
+$('p1').innerHTML=r&&r.length?`<table><tr><th>تاریخ درخواستی</th><th>زمان</th><th>نام</th><th>تلفن</th><th>نوع</th><th>توضیحات</th><th>وضعیت</th><th></th></tr>${r.map(x=>`<tr><td><input class="ci" dir="ltr" value="${fa(esc(x.date_j))}" onchange="rdt(${x.id},this)" aria-label="تاریخ درخواستی"></td><td>${esc(x.time)}</td><td>${esc(x.name)}</td><td>${fa(esc(x.phone))}</td><td>${esc(x.type)}</td><td>${esc(x.note)}</td><td><span class="tag ${x.status=='تأیید شد'?'ok':x.status=='رد شد'?'no':''}">${x.status}</span></td><td style="white-space:nowrap"><button class="btn s" onclick="st(${x.id},'تأیید شد')">تأیید</button> <button class="btn s o" onclick="st(${x.id},'رد شد')">رد</button> <button class="btn s d" onclick="rm(${x.id})">حذف</button></td></tr>`).join('')}</table>`:'<p class="sub">هنوز درخواستی ثبت نشده است.</p>'}
+async function rdt(id,el){const d=nj(el.value);if(!d){alert('تاریخ نامعتبر است (مثال: ۱۴۰۵/۰۸/۱۰)');return reqs()}await sb.from('requests').update({date_j:d}).eq('id',id);el.value=fa(d)}
 const st=async(id,s)=>{await sb.from('requests').update({status:s}).eq('id',id);reqs()};
 const rm=id=>cf('این درخواست حذف شود؟',async()=>{await sb.from('requests').delete().eq('id',id);reqs()});
+// ---- calendar settings
+const WD=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];let CW=[],CD=[],ac;
+async function loadSet(){const{data}=await sb.from('settings').select('*');(data||[]).forEach(r=>{if(r.key=='closed_weekdays')CW=r.value||[];if(r.key=='closed_dates')CD=r.value||[]});drawWk();
+ac=jcal($('ac'),{isOff:(ds,wd)=>CW.includes(wd)||CD.includes(ds),canPick:(ds,wd)=>!CW.includes(wd),pick:async ds=>{CD=CD.includes(ds)?CD.filter(x=>x!=ds):[...CD,ds];const{error}=await sb.from('settings').upsert({key:'closed_dates',value:CD});if(error)alert('ذخیره نشد؛ فایل supabase-setup.sql را (نسخه جدید) اجرا کرده‌اید؟')}})}
+const drawWk=()=>{$('wk').innerHTML=WD.map((n,i)=>`<button class="${CW.includes(i)?'off':''}" onclick="togW(${i})">${n}</button>`).join('')};
+async function togW(i){CW=CW.includes(i)?CW.filter(x=>x!=i):[...CW,i];drawWk();ac&&ac.draw();const{error}=await sb.from('settings').upsert({key:'closed_weekdays',value:CW});if(error)alert('ذخیره نشد؛ فایل supabase-setup.sql را (نسخه جدید) اجرا کرده‌اید؟')}
+// ---- home highlight boxes
+let H={};
+async function loadH(){const{data}=await sb.from('highlights').select('*').order('id');H={};(data||[]).forEach(x=>H[x.id]=x);drawH()}
+function drawH(){$('hg').innerHTML=[1,2,3,4,5].map(i=>{const x=H[i]||{};return `<div class="card he"><div class="hp" id="hp${i}">${x.image?`<img src="${x.image}" alt="">`:'بدون عکس (۴ به ۳)'}</div>
+<div class="hr"><label class="btn s">انتخاب / تغییر عکس<input type="file" accept="image/*" hidden onchange="upImg(${i},this)"></label><button class="btn s d" onclick="delImg(${i})" ${x.image?'':'disabled'}>حذف عکس</button></div>
+<input placeholder="عنوان (اختیاری)" value="${esc(x.title)}" onchange="saveH(${i},'title',this.value)"><textarea rows="3" placeholder="متن کادر" onchange="saveH(${i},'body',this.value)">${esc(x.body)}</textarea><small id="hs${i}"></small></div>`}).join('')}
+async function saveH(i,k,v){H[i]={...(H[i]||{}),id:i,[k]:v};const{error}=await sb.from('highlights').upsert({id:i,title:H[i].title||null,body:H[i].body||null,image:H[i].image||null});
+$('hs'+i).textContent=error?'':'✓ ذخیره شد';$('hs'+i).style.color='';if(error){$('hs'+i).textContent='ذخیره نشد؛ فایل supabase-setup.sql را (نسخه جدید) اجرا کرده‌اید؟';$('hs'+i).style.color='var(--bad)'}return !error}
+function toJpeg(f){return new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const W=720,Hh=540,c=document.createElement('canvas');c.width=W;c.height=Hh;const x=c.getContext('2d'),s=Math.max(W/im.width,Hh/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,(W-w)/2,(Hh-h)/2,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.8))};im.onerror=no;im.src=u})}
+async function upImg(i,el){const f=el.files[0];if(!f)return;let d;try{d=await toJpeg(f)}catch(e){return alert('این فایل عکس معتبر نیست.')}
+if(await saveH(i,'image',d))drawH();else{delete H[i].image}el.value=''}
+const delImg=i=>cf('عکس این کادر حذف شود؟',async()=>{if(await saveH(i,'image',null)){H[i].image=null;drawH()}});
 // ---- notifications
 async function notif(){const now=today();
 const{data}=await sb.from('installments').select('*,patients(name,file_no)').eq('paid',false).eq('kind','اقساطی').lte('due_j',now).order('due_j');
