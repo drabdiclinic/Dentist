@@ -164,3 +164,9 @@ td{padding:10px;border-top:1px solid #ffffff22}
 .chip{animation:fl 5s ease-in-out infinite}.chip+.chip{animation-delay:-2.5s}
 .tooth{animation:ft 6s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.chip,.tooth{animation:none}.rv{opacity:1;transform:none}}
+
+/* transparent aligner hero illustration */
+.aligner-art{position:absolute;width:190px;height:auto;right:8px;bottom:42px;z-index:2;overflow:visible;filter:drop-shadow(0 12px 20px #00132f99);animation:alignerFloat 6s ease-in-out infinite}
+@keyframes alignerFloat{50%{transform:translateY(-9px) rotate(2deg)}}
+@media(max-width:760px){.aligner-art{width:132px;right:2px;bottom:20px}}
+@media(prefers-reduced-motion:reduce){.aligner-art{animation:none}}
