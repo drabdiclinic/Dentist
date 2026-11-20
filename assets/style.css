@@ -164,10 +164,3 @@ td{padding:10px;border-top:1px solid #ffffff22}
 .chip{animation:fl 5s ease-in-out infinite}.chip+.chip{animation-delay:-2.5s}
 .tooth{animation:ft 6s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.chip,.tooth{animation:none}.rv{opacity:1;transform:none}}
-
-/* transparent aligner hero illustration */
-.aligner-title{display:inline-flex;flex-direction:column;align-items:flex-start;gap:0;vertical-align:middle;line-height:1.15}
-.aligner-art{position:static;display:block;width:150px;height:auto;overflow:visible;filter:drop-shadow(0 8px 14px #00132f99);animation:alignerFloat 6s ease-in-out infinite}
-@keyframes alignerFloat{50%{transform:translateY(-7px) rotate(2deg)}}
-@media(max-width:760px){.aligner-art{width:112px}}
-@media(prefers-reduced-motion:reduce){.aligner-art{animation:none}}
