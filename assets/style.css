@@ -45,7 +45,7 @@ h2{font-size:28px;color:var(--n);margin-bottom:8px}
 .sub{color:var(--mut);margin-bottom:28px}
 .g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;perspective:900px}
 .card{border:1px solid var(--ln);border-radius:20px;padding:22px;background:linear-gradient(160deg,#ffffff30,#ffffff0d);backdrop-filter:blur(10px);box-shadow:0 24px 50px #0004;transition:.3s}
-#services .g{grid-template-columns:repeat(3,1fr)}
+#services .g{grid-template-columns:repeat(4,1fr)}
 .ic{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;margin-bottom:14px;color:#fff;background:linear-gradient(145deg,#5fe3ff,#0a8fb8);box-shadow:0 6px 0 #0a6e8e,0 14px 22px #0005,inset 0 2px 0 #ffffffaa}
 .ic svg{width:30px;height:30px;filter:drop-shadow(0 2px 2px #0a4a6a99)}
 .g .card:hover{transform:translateY(-6px) rotateX(5deg)}
