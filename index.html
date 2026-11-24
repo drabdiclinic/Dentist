@@ -8,7 +8,7 @@
 <nav><a href="#services">خدمات</a><a href="#about">درباره پزشک</a><a href="#booking">نوبت‌دهی</a><a href="#contact">تماس با ما</a><a href="#" onclick="openRec();return false">پرونده بیمار</a></nav>
 <div style="display:flex;gap:8px"><a class="btn o" href="#" onclick="openRec();return false">پرونده بیمار</a><a class="btn" href="#booking">نوبت آنلاین</a></div></div></header>
 <div class="hero"><div class="w"><div style="padding-bottom:20px">
-<h1>لبخند زیبا<br>با ارتودنسی<br><b>شفــــاف</b></h1>
+<div class="hh"><h1>لبخند زیبا<br>با ارتودنسی<br><b>شفــــاف</b></h1><img class="al" src="assets/aligner.webp" alt="الاینر شفاف ارتودنسی" width="640" height="361"></div>
 <p>دکتر فاطمه عبدی؛ ارتودنسی و زیبایی دندان با برنامه درمانی اختصاصی برای هر بیمار.</p>
 <a class="btn" href="#booking">نوبت آنلاین</a><a class="btn o" href="#services">خدمات کلینیک</a></div>
 <div class="vis"><div class="disc"></div><svg viewBox="0 0 100 115" class="tooth"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#dff4fb"/><stop offset="1" stop-color="#8fd3ea"/></linearGradient><filter id="f"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#00314f" flood-opacity=".45"/></filter></defs><path filter="url(#f)" fill="url(#g)" d="M50 10C30 0 10 15 12 40c2 20 10 30 14 55 2 13 10 15 14 0 4-15 6-23 10-23s6 8 10 23c4 15 12 13 14 0 4-25 12-35 14-55C90 15 70 0 50 10Z"/><ellipse cx="32" cy="28" rx="9" ry="14" fill="#fff" opacity=".75" transform="rotate(-20 32 28)"/></svg><img class="doc" src="assets/doctor.png" alt="دکتر فاطمه عبدی"><div class="chip" style="top:90px;right:0">نوبت‌دهی آنلاین</div><div class="chip" style="bottom:130px;left:0">پرونده دیجیتال بیمار</div></div></div></div>
@@ -79,7 +79,7 @@ ${I.length?`<div class="tw"><table class="rt"><thead><tr><th></th><th>تاریخ
 <br><button class="btn o s" onclick="closeRec()">خروج</button>`}
 </script>
 <script>
-rv(document.querySelectorAll('.hero h1,.hero p,.hero .btn'),'r');rv(document.querySelectorAll('.hero .vis'),'l',.2);
+rv(document.querySelectorAll('.hero h1,.hero p,.hero .btn'),'r');rv(document.querySelectorAll('.hero .al'),'l',.15);rv(document.querySelectorAll('.hero .vis'),'l',.2);
 rv(document.querySelectorAll('section h2,section .sub'));rv(document.querySelectorAll('#services .card'));
 rv(document.querySelectorAll('#about .w>p'),'r');rv(document.querySelectorAll('#contact .card'),'z');rv(document.querySelectorAll('#booking form'));
 </script>

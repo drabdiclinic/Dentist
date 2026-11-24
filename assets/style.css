@@ -164,3 +164,7 @@ td{padding:10px;border-top:1px solid #ffffff22}
 .chip{animation:fl 5s ease-in-out infinite}.chip+.chip{animation-delay:-2.5s}
 .tooth{animation:ft 6s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.chip,.tooth{animation:none}.rv{opacity:1;transform:none}}
+
+/* hero aligner image */
+.hh{display:flex;align-items:center;gap:16px}.hh h1{min-width:0}
+.al{flex:none;width:clamp(100px,30vw,170px);height:auto;filter:drop-shadow(0 14px 18px #00132f88)}
